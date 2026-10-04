@@ -1,0 +1,61 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101c2b">
+  <title>Skycast — Local Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Skycast home"><span class="brand-mark">☀</span><span>skycast<span class="brand-dot">.</span></span></a>
+      <span class="top-note"><span class="live-dot"></span> WEATHER, WHERE YOU ARE</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">YOUR DAY, IN CLEARER VIEW</p>
+          <h1>A little more<br><span>in the forecast.</span></h1>
+          <p class="intro">Get a quick read on the weather around you, wherever the day takes you.</p>
+        </div>
+        <div class="sun-art" aria-hidden="true"><div class="sun-halo"></div><div class="sun"></div><div class="cloud cloud-one"></div><div class="cloud cloud-two"></div></div>
+      </section>
+
+      <section class="search-card" aria-labelledby="search-title">
+        <div class="card-heading"><div><p class="eyebrow">LOCAL FORECAST</p><h2 id="search-title">Where should we look?</h2></div><span class="pin-icon" aria-hidden="true">⌖</span></div>
+        <form method="post" action="/" id="weather-form">
+          <div class="field-grid">
+            <label class="field"><span>Country</span><input name="country" placeholder="e.g. India" value="{{ form.country }}" autocomplete="country-name" required></label>
+            <label class="field"><span>State / Region</span><input name="state" placeholder="e.g. Maharashtra" value="{{ form.state }}" autocomplete="address-level1" required></label>
+            <label class="field"><span>City</span><input name="city" placeholder="e.g. Pune" value="{{ form.city }}" autocomplete="address-level2" required></label>
+            <label class="field"><span>District</span><input name="district" placeholder="e.g. Pune" value="{{ form.district }}" required></label>
+          </div>
+          <button class="search-button" type="submit"><span class="button-icon">⌕</span><span>Tell me the weather</span><span class="button-arrow">↗</span></button>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<p class="notice {{ category }}" role="alert">{{ message }}</p>{% endfor %}{% endif %}{% endwith %}
+        <p class="provider-note">Weather data provided by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></p>
+      </section>
+
+      {% if weather %}
+      <section class="results" aria-live="polite">
+        <div class="results-top"><div><p class="eyebrow">RIGHT NOW</p><h2>{{ weather.place }}{% if weather.state %}<span class="place-state"> · {{ weather.state }}</span>{% endif %}</h2><p class="location-line">{{ weather.district }}{% if weather.district and weather.country %}, {% endif %}{{ weather.country }}</p></div><span class="result-icon" aria-hidden="true">{{ weather.icon }}</span></div>
+        <div class="current-weather"><div class="temperature">{{ weather.temperature if weather.temperature is not none else '—' }}<span>{{ weather.units.get('temperature_2m', '°C') }}</span></div><div class="condition">{{ weather.label }}<small>Feels like {{ weather.feels_like if weather.feels_like is not none else '—' }}{{ weather.units.get('apparent_temperature', '°C') }}</small></div></div>
+        <div class="metrics"><div class="metric"><span class="metric-icon">💧</span><span class="metric-label">Humidity</span><strong>{{ weather.humidity if weather.humidity is not none else '—' }}<small>%</small></strong></div><div class="metric"><span class="metric-icon">🌬</span><span class="metric-label">Wind</span><strong>{{ weather.wind if weather.wind is not none else '—' }}<small> {{ weather.units.get('wind_speed_10m', 'km/h') }}</small></strong></div><div class="metric"><span class="metric-icon">☔</span><span class="metric-label">Precipitation</span><strong>{{ weather.precipitation if weather.precipitation is not none else '—' }}<small> {{ weather.units.get('precipitation', 'mm') }}</small></strong></div></div>
+        <div class="forecast-heading"><div><p class="eyebrow">COMING UP</p><h3>5-day outlook</h3></div><span class="forecast-caption">Local time</span></div>
+        <div class="forecast-list">{% for day in weather.days %}<article class="forecast-day"><span class="day-name">{{ day.date }}</span><span class="day-icon" aria-hidden="true">{{ day.icon }}</span><span class="day-condition">{{ day.label }}</span><strong>{{ day.high if day.high is not none else '—' }}° <span>/ {{ day.low if day.low is not none else '—' }}°</span></strong><span class="rain-chance">☔ {{ day.rain if day.rain is not none else '—' }}%</span></article>{% endfor %}</div>
+      </section>
+      {% endif %}
+    </main>
+    <footer><span>Made for the places that feel like home.</span><span>Forecast powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></span></footer>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
+
+
