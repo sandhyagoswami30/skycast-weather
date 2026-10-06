@@ -1,4 +1,5 @@
-﻿# Skycast — Weather Website
+﻿<img width="1352" height="605" alt="image" src="https://github.com/user-attachments/assets/f413eff7-a4a0-4859-9887-81adf1e932c3" />
+# Skycast — Weather Website
 
 A responsive Python/Flask weather page. Enter a state, city, and district to see current conditions and a five-day outlook.
 
